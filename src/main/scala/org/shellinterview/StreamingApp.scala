@@ -3,8 +3,9 @@ package org.shellinterview
 import com.typesafe.config.ConfigFactory
 import org.apache.log4j.{Level, LogManager}
 import org.apache.spark.sql.SparkSession
-import org.apache.spark.sql.streaming.{OutputMode, StreamingQuery}
 import org.slf4j.LoggerFactory
+
+import scala.util.Try
 
 object StreamingApp extends App {
 
@@ -13,7 +14,6 @@ object StreamingApp extends App {
   lazy implicit val spark: SparkSession = SparkSession.builder()
     .appName("Structured Streaming")
     .getOrCreate()
-
 
   def setSparkExecutorLogLevel(spark: SparkSession, level: Level): Unit = {
     spark.sparkContext.parallelize(Seq("")).foreachPartition(_ => {
@@ -24,18 +24,11 @@ object StreamingApp extends App {
   val conf = ConfigFactory.load()
   setSparkExecutorLogLevel(spark, Level.WARN)
 
-  case class Emp(id: Int, name: String)
-  val dsData = Emp(1, "shankar")
-
-  import spark.implicits._
-  val ds = spark.createDataset[Emp](Seq(dsData))
-//  val ds = spark.emptyDataset[DsSet]
-
-  val query: StreamingQuery = ds
-    .writeStream
-    .outputMode(OutputMode.Update())
-    .options(Map("checkpointLocation" -> conf.getString("check-point-path")))
-    .foreach(new CustomForeachWriter())
-    .start()
+  for {
+    conf         <- Try(ConfigFactory.load().resolve())
+    appConfig    <- AppConfig.fromConfig(conf)
+    appEngine    <- AppEngine.create(appConfig)
+    streamingQuery = appEngine.createStreamingQuery()
+  } yield streamingQuery.awaitTermination()
 
 }

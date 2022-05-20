@@ -21,12 +21,14 @@ class AppConfigSpec extends AnyWordSpec
           |application {
           |  data-input-path: "/some/input/path"
           |  data-output-path: "/some/output/path"
+          |  check-point-path: "/check-point/mount-path"
           |}
           |""".stripMargin
 
       val expected = AppConfig(
         Application("/some/input/path",
-          "/some/output/path")
+          "/some/output/path",
+          "/check-point/mount-path")
       )
 
       val result = AppConfig.fromConfig(ConfigFactory.parseString(configString).resolve())

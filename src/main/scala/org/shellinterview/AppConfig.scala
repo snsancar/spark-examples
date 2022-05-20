@@ -7,7 +7,7 @@ import pureconfig.error.{ ConfigReaderException, ConfigReaderFailures, Throwable
 
 import scala.util.Try
 
-case class Application(dataInputPath: String, dataOutputPath: String)
+case class Application(dataInputPath: String, dataOutputPath: String, checkPointPath: String)
 case class AppConfig(application: Application)
 object AppConfig {
 
