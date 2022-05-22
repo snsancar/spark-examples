@@ -29,5 +29,15 @@ object PostgresDocker extends App {
 
   //  df.write.mode(SaveMode.Overwrite).jdbc(jdbcUrl, "test", properties)
 
+//  docker exec -it image-id bash
+//
+//  psql -U postgres
+//    \conninfo
+//    \q
+//
+//  docker run --name tst-postgres -e POSTGRES_PASSWORD=pg_password -d postgres -c "listen_addresses=*"
+//  docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' container_name_or_id
+//  docker stop tst-postgres
+//  docker run --name some-postgres -p 5432:5432 -e POSTGRES_PASSWORD=pg_password -d postgres
 
 }
